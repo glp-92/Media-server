@@ -11,3 +11,10 @@ Multiple services running on docker compose on single node to provide streaming 
 - `Sonarr` automates management on tv series
 - `Prowlarr` connects radarr/sonnar with qbittorrent and sabnzdb
 - `Jellyfin` media server that provides de UI to see the content
+
+## Setup main directories
+
+```bash
+mkdir -p /mnt/media/ssd1/data/{downloads/{torrents,usenet},media/{movies,tv}}
+mkdir -p /mnt/media/ssd1/docker_configs/{gluetun,qbittorrent,sabnzbd,radarr,sonarr,prowlarr,jellyfin}
+```
