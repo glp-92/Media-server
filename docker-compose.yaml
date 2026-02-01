@@ -49,13 +49,15 @@ services:
     image: lscr.io/linuxserver/sabnzbd:latest
     container_name: sabnzbd
     network_mode: service:gluetun
+    security_opt:
+      - no-new-privileges:true
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
     volumes:
       - ${DOCKERCONFDIR}/sabnzbd/config:/config
-      - ${DOCKERSTORAGEDIR}/usenet:/data/usenet
+      - ${BASE_PATH}/downloads/usenet:/data/downloads/usenet
     depends_on:
       gluetun:
         condition: service_healthy
@@ -64,12 +66,8 @@ services:
   radarr:
     container_name: radarr
     image: ghcr.io/hotio/radarr:latest
-    restart: unless-stopped
-    logging:
-      driver: json-file
-      options:
-        max-file: ${DOCKERLOGGING_MAXFILE}
-        max-size: ${DOCKERLOGGING_MAXSIZE}
+    security_opt:
+      - no-new-privileges:true
     ports:
       - 7878:7878
     environment:
@@ -78,19 +76,15 @@ services:
       - TZ=${TZ}
       - UMASK=002
     volumes:
-      - /etc/localtime:/etc/localtime:ro
       - ${DOCKERCONFDIR}/radarr:/config
-      - ${DOCKERSTORAGEDIR}:/data
+      - ${BASE_PATH}:/data
+    restart: unless-stopped
 
   sonarr:
     container_name: sonarr
     image: ghcr.io/hotio/sonarr:release
-    restart: unless-stopped
-    logging:
-      driver: json-file
-      options:
-        max-file: ${DOCKERLOGGING_MAXFILE}
-        max-size: ${DOCKERLOGGING_MAXSIZE}
+    security_opt:
+      - no-new-privileges:true
     ports:
       - 8989:8989
     environment:
@@ -99,42 +93,38 @@ services:
       - TZ=${TZ}
       - UMASK=002
     volumes:
-      - /etc/localtime:/etc/localtime:ro
       - ${DOCKERCONFDIR}/sonarr:/config
-      - ${DOCKERSTORAGEDIR}:/data
+      - ${BASE_PATH}:/data
+    restart: unless-stopped
 
   prowlarr:
     container_name: prowlarr
     image: ghcr.io/hotio/prowlarr:testing
-    restart: unless-stopped
-    logging:
-      driver: json-file
-      options:
-        max-file: ${DOCKERLOGGING_MAXFILE}
-        max-size: ${DOCKERLOGGING_MAXSIZE}
+    security_opt:
+      - no-new-privileges:true
     ports:
       - 9696:9696
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
-      - UMASK=002
-      - ARGS=
     volumes:
-      - ${DOCKERCONFDIR}/prowlarr:/config:rw
+      - ${DOCKERCONFDIR}/prowlarr:/config
+    restart: unless-stopped
 
   jellyfin:
     image: jellyfin/jellyfin:latest
     container_name: jellyfin
+    security_opt:
+      - no-new-privileges:true
     ports:
       - 8096:8096
     environment:
       - PUID=${PUID}
-      - GUID=${PGID}
+      - PGID=${PGID}
       - TZ=${TZ}
     volumes:
-      - ${DOCKERCONFDIR}/jellyfin/config:/config:rw
-      - ${DOCKERCONFDIR}/jellyfin/cache:/cache:rw
-      - ${DOCKERSTORAGEDIR}/media/tv:/tv:rw
-      - ${DOCKERSTORAGEDIR}/media/movies:/movies:rw
+      - ${DOCKERCONFDIR}/jellyfin/config:/config
+      - ${DOCKERCONFDIR}/jellyfin/cache:/cache
+      - ${BASE_PATH}/media:/data/media:ro # ACCESO SOLO LECTURA
     restart: unless-stopped
