@@ -126,5 +126,5 @@ services:
     volumes:
       - ${DOCKERCONFDIR}/jellyfin/config:/config
       - ${DOCKERCONFDIR}/jellyfin/cache:/cache
-      - ${BASE_PATH}/media:/data/media:ro # ACCESO SOLO LECTURA
+      - ${BASE_PATH}/media:/data/media:ro # only read
     restart: unless-stopped
