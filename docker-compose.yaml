@@ -6,6 +6,8 @@ services:
       - NET_ADMIN
     devices:
       - /dev/net/tun:/dev/net/tun
+    security_opt:
+      - no-new-privileges:true
     environment:
       - VPN_SERVICE_PROVIDER=${VPN_SERVICE_PROVIDER}
       - VPN_TYPE=${VPN_TYPE}
@@ -15,8 +17,13 @@ services:
     volumes:
       - ${DOCKERCONFDIR}/gluetun:/gluetun
     ports:
-      - ${QBITTORRENT_PORT}:${QBITTORRENT_PORT}
-      - ${SABNZBD_PORT}:${SABNZBD_PORT}
+      - ${QBITTORRENT_PORT}:${QBITTORRENT_PORT} # Web UI qBit
+      - ${SABNZBD_PORT}:${SABNZBD_PORT} # Web UI SABnzbd
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://www.google.com"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     restart: unless-stopped
 
   qbittorrent:
