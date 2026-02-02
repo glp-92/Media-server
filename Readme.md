@@ -24,38 +24,38 @@ It is higly recommended to read the docs in order to understand what services ar
 First, create a non-sudo user to run the stack and avoid compromising other resources
 
 ```bash
-sudo groupadd -g 1005 mediauser
-sudo useradd -u 1005 -g 1005 -r -s /bin/false mediauser
+sudo groupadd -g 1005 mediaserver
+sudo useradd -u 1005 -g 1005 -r -s /bin/false mediaserver
 ```
 
-Add your user to mediauser group in order to manage folders without sudo permission
+Add your user to mediaserver group in order to manage folders without sudo permission
 
 ```bash
-sudo usermod -aG mediauser $(whoami)
+sudo usermod -aG mediaserver $(whoami)
 ```
 
 Create a `/media-server` folder which contains `/torrents` and `/media`, and inside subfolders for every type of media (tv, movies and music)
 
 Tree visually outputs the result folder structure
 
-Assign folder to mediauser user and group
+Assign folder to mediaserver user and group
 
 `a=,a+rX,u+w,g+w` => a deletes current permission; a+rX write permission but only exec permission to folders; u+w,g+w read and write group and user
 
 ```bash
-sudo mkdir -p /media-server/{torrents/{tv,movies,music},media/{tv,movies,music}}
+sudo mkdir -p /mnt/SSD2/media-server/{torrents/{tv,movies,music},media/{tv,movies,music}}
 sudo apt install tree
-tree /media-server
-sudo chown -R mediauser:mediauser /media-server
-sudo chmod -R a=,a+rX,u+w,g+w /media-server
-ls -ln /media-server
+tree /mnt/SSD2/media-server
+sudo chown -R mediaserver:mediaserver /mnt/SSD2/media-server
+sudo chmod -R a=,a+rX,u+w,g+w /mnt/SSD2/media-server
+ls -ln /mnt/SSD2/media-server
 ```
 
 Create a folder to storage services config generated on first time
 
 ```bash
-sudo mkdir -p /media-server-config/{radarr,sonarr,lidarr,bazarr,prowlarr,qbittorrent,jellyfin}
-sudo chown -R mediauser:mediauser /media-server-config
-sudo chmod -R a=,a+rX,u+w,g+w /media-server-config
-ls -ln /media-server-config
+sudo mkdir -p /mnt/SSD2/media-server-config/{radarr,sonarr,lidarr,bazarr,prowlarr,qbittorrent,jellyfin}
+sudo chown -R mediaserver:mediaserver /mnt/SSD2/media-server-config
+sudo chmod -R a=,a+rX,u+w,g+w /mnt/SSD2/media-server-config
+ls -ln /mnt/SSD2/media-server-config
 ```

@@ -23,8 +23,8 @@ services:
       - 7878:7878
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /media-server-config/radarr:/config
-      - /media-server:/data
+      - ${ROOT_CONFIG_FOLDER}/radarr:/config
+      - ${ROOT_MEDIA_FOLDER}:/data
   
   sonarr: # management of tv shows library  
     <<: *common-keys
@@ -34,8 +34,8 @@ services:
       - 8989:8989
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /media-server-config/sonarr:/config
-      - /media-server:/data
+      - ${ROOT_CONFIG_FOLDER}/sonarr:/config
+      - ${ROOT_MEDIA_FOLDER}:/data
 
   lidarr: # management of music library
     <<: *common-keys
@@ -45,8 +45,8 @@ services:
       - 8686:8686
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /media-server-config/lidarr:/config
-      - /media-server:/data
+      - ${ROOT_CONFIG_FOLDER}/lidarr:/config
+      - ${ROOT_MEDIA_FOLDER}:/data
 
   bazarr: # subtitles management
     <<: *common-keys
@@ -56,8 +56,8 @@ services:
       - 6767:6767
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /media-server-config/bazarr:/config
-      - /media-server:/data
+      - ${ROOT_CONFIG_FOLDER}/bazarr:/config
+      - ${ROOT_MEDIA_FOLDER}:/data
 
   prowlarr: # indexer manager
     <<: *common-keys
@@ -67,7 +67,7 @@ services:
       - 9696:9696
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /media-server-config/prowlarr:/config
+      - ${ROOT_CONFIG_FOLDER}/prowlarr:/config
 
   flaresolverr:
     <<: *common-keys
@@ -89,8 +89,8 @@ services:
       - TORRENTING_PORT=6881
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /media-server-config/qbittorrent:/config
-      - /media-server:/data
+      - ${ROOT_CONFIG_FOLDER}/qbittorrent:/config
+      - ${ROOT_MEDIA_FOLDER}:/data
 
   jellyfin: # media server
     <<: *common-keys
@@ -98,8 +98,8 @@ services:
     image: ghcr.io/hotio/jellyfin:latest
     volumes:
       - /etc/localtime:/etc/localtime:ro # to get time to container
-      - /media-server-config/jellyfin:/config
-      - /media-server/media:/data/media:ro #read-only
+      - ${ROOT_CONFIG_FOLDER}/jellyfin:/config
+      - ${ROOT_MEDIA_FOLDER}/media:/data/media:ro #read-only
     ports:
       - 8096:8096
 
