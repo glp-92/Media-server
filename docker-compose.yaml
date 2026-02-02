@@ -1,130 +1,101 @@
+x-common-keys: &common-keys # common keys
+    restart: unless-stopped
+    logging:
+      driver: json-file
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      PUID: 1005
+      PGID: 1005
+      UMASK: 002 # new files permission inheritance
+      TZ: Europe/London
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+
 services:
-  gluetun:
-    image: qmcgaw/gluetun:latest
-    container_name: gluetun
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - /dev/net/tun:/dev/net/tun
-    security_opt:
-      - no-new-privileges:true
-    environment:
-      - VPN_SERVICE_PROVIDER=${VPN_SERVICE_PROVIDER}
-      - VPN_TYPE=${VPN_TYPE}
-      - OPENVPN_USER=${OPENVPN_USER}
-      - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
-      - SERVER_CITIES=${SERVER_CITIES}
-    volumes:
-      - ${DOCKERCONFDIR}/gluetun:/gluetun
-    ports:
-      - ${QBITTORRENT_PORT}:${QBITTORRENT_PORT} # Web UI qBit
-      - ${SABNZBD_PORT}:${SABNZBD_PORT} # Web UI SABnzbd
-    healthcheck:
-      test: ["CMD", "curl", "-f", "https://www.google.com"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    restart: unless-stopped
 
-  qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:latest
-    container_name: qbittorrent
-    network_mode: service:gluetun
-    security_opt:
-      - no-new-privileges:true
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - WEBUI_PORT=${QBITTORRENT_PORT}
-    volumes:
-      - ${DOCKERCONFDIR}/qbittorrent:/config
-      - ${BASE_PATH}/downloads/torrents:/data/downloads/torrents
-    depends_on:
-      gluetun:
-        condition: service_healthy
-    restart: unless-stopped
-
-  sabnzbd:
-    image: lscr.io/linuxserver/sabnzbd:latest
-    container_name: sabnzbd
-    network_mode: service:gluetun
-    security_opt:
-      - no-new-privileges:true
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    volumes:
-      - ${DOCKERCONFDIR}/sabnzbd/config:/config
-      - ${BASE_PATH}/downloads/usenet:/data/downloads/usenet
-    depends_on:
-      gluetun:
-        condition: service_healthy
-    restart: unless-stopped
-
-  radarr:
+  radarr: # management of movies library
+    <<: *common-keys
     container_name: radarr
     image: ghcr.io/hotio/radarr:latest
-    security_opt:
-      - no-new-privileges:true
     ports:
       - 7878:7878
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - UMASK=002
     volumes:
-      - ${DOCKERCONFDIR}/radarr:/config
-      - ${BASE_PATH}:/data
-    restart: unless-stopped
-
-  sonarr:
+      - /etc/localtime:/etc/localtime:ro
+      - /media-server-config/radarr:/config
+      - /media-server:/data
+  
+  sonarr: # management of tv shows library  
+    <<: *common-keys
     container_name: sonarr
-    image: ghcr.io/hotio/sonarr:release
-    security_opt:
-      - no-new-privileges:true
+    image: ghcr.io/hotio/sonarr:latest
     ports:
       - 8989:8989
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - UMASK=002
     volumes:
-      - ${DOCKERCONFDIR}/sonarr:/config
-      - ${BASE_PATH}:/data
-    restart: unless-stopped
+      - /etc/localtime:/etc/localtime:ro
+      - /media-server-config/sonarr:/config
+      - /media-server:/data
 
-  prowlarr:
+  lidarr: # management of music library
+    <<: *common-keys
+    container_name: lidarr
+    image: ghcr.io/hotio/lidarr:latest
+    ports:
+      - 8686:8686
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /media-server-config/lidarr:/config
+      - /media-server:/data
+
+  bazarr: # subtitles management
+    <<: *common-keys
+    container_name: bazarr
+    image: ghcr.io/hotio/bazarr:latest
+    ports:
+      - 6767:6767
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /media-server-config/bazarr:/config
+      - /media-server:/data
+
+  prowlarr: # indexer manager
+    <<: *common-keys
     container_name: prowlarr
-    image: ghcr.io/hotio/prowlarr:testing
-    security_opt:
-      - no-new-privileges:true
+    image: ghcr.io/hotio/prowlarr:latest
     ports:
       - 9696:9696
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
     volumes:
-      - ${DOCKERCONFDIR}/prowlarr:/config
-    restart: unless-stopped
+      - /etc/localtime:/etc/localtime:ro
+      - /media-server-config/prowlarr:/config
 
-  jellyfin:
-    image: jellyfin/jellyfin:latest
+  qbittorrent: # downloader
+    <<: *common-keys
+    container_name: qbittorrent
+    image: ghcr.io/hotio/qbittorrent:latest
+    ports:
+      - 8080:8080
+      - 6881:6881
+      - 6881:6881/udp
+    environment:
+      - WEBUI_PORT=8080
+      - TORRENTING_PORT=6881
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /media-server-config/qbittorrent:/config
+      - /media-server:/data
+
+  jellyfin: # media server
+    <<: *common-keys
     container_name: jellyfin
-    security_opt:
-      - no-new-privileges:true
+    image: ghcr.io/hotio/jellyfin:latest
+    volumes:
+      - /etc/localtime:/etc/localtime:ro # to get time to container
+      - /media-server-config/jellyfin:/config
+      - /media-server/media:/data/media:ro #read-only
     ports:
       - 8096:8096
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    volumes:
-      - ${DOCKERCONFDIR}/jellyfin/config:/config
-      - ${DOCKERCONFDIR}/jellyfin/cache:/cache
-      - ${BASE_PATH}/media:/data/media:ro # only read
-    restart: unless-stopped
+
+networks:
+  default:
+    name: arr_network

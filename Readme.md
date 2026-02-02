@@ -1,6 +1,13 @@
-# About Media Server
+# About ARR Stack
 
-Multiple services running on docker compose on single node to provide streaming experience to user. Keep in mind that P2P downloads can be unsafe so be sure that downloaded content is scanned and isolated
+Arr Stack provides a full media server with all elements interconnected to automate tasks such as select films, automatically download, get subtitles, manage storage ando more
+
+## Docks
+
+It is higly recommended to read the docs in order to understand what services are doing
+
+[Justificacion of use known DNS over VPN](https://wiki.servarr.com/en/vpn)
+[Setup folder structure for docker containers. SEE PERMISSIONS](https://trash-guides.info/File-and-Folder-Structure/How-to-set-up/Docker/) 
 
 ## Services description
 
@@ -14,7 +21,41 @@ Multiple services running on docker compose on single node to provide streaming 
 
 ## Setup main directories
 
+First, create a non-sudo user to run the stack and avoid compromising other resources
+
 ```bash
-mkdir -p /mnt/media/ssd1/data/{downloads/{torrents,usenet},media/{movies,tv}}
-mkdir -p /mnt/media/ssd1/docker_configs/{gluetun,qbittorrent,sabnzbd,radarr,sonarr,prowlarr,jellyfin}
+sudo groupadd -g 1005 mediauser
+sudo useradd -u 1005 -g 1005 -r -s /bin/false mediauser
+```
+
+Add your user to mediauser group in order to manage folders without sudo permission
+
+```bash
+sudo usermod -aG mediauser $(whoami)
+```
+
+Create a `/media-server` folder which contains `/torrents` and `/media`, and inside subfolders for every type of media (tv, movies and music)
+
+Tree visually outputs the result folder structure
+
+Assign folder to mediauser user and group
+
+`a=,a+rX,u+w,g+w` => a deletes current permission; a+rX write permission but only exec permission to folders; u+w,g+w read and write group and user
+
+```bash
+sudo mkdir -p /media-server/{torrents/{tv,movies,music},media/{tv,movies,music}}
+sudo apt install tree
+tree /media-server
+sudo chown -R mediauser:mediauser /media-server
+sudo chmod -R a=,a+rX,u+w,g+w /media-server
+ls -ln /media-server
+```
+
+Create a folder to storage services config generated on first time
+
+```bash
+sudo mkdir -p /media-server-config/{radarr,sonarr,lidarr,bazarr,prowlarr,qbittorrent,jellyfin}
+sudo chown -R mediauser:mediauser /media-server-config
+sudo chmod -R a=,a+rX,u+w,g+w /media-server-config
+ls -ln /media-server-config
 ```
