@@ -5,8 +5,8 @@ x-common-keys: &common-keys # common keys
     security_opt:
       - no-new-privileges:true
     environment:
-      PUID: 1005
-      PGID: 1005
+      PUID: 997
+      PGID: 983
       UMASK: 002 # new files permission inheritance
       TZ: Europe/London
     dns:
@@ -87,6 +87,10 @@ services:
     environment:
       - WEBUI_PORT=8080
       - TORRENTING_PORT=6881
+      - PUID=997
+      - PGID=983
+      - UMASK=002 # new files permission inheritance
+      - TZ=Europe/London
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${ROOT_CONFIG_FOLDER}/qbittorrent:/config

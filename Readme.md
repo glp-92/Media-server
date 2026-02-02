@@ -8,6 +8,7 @@ It is higly recommended to read the docs in order to understand what services ar
 
 [Justificacion of use known DNS over VPN](https://wiki.servarr.com/en/vpn)
 [Setup folder structure for docker containers. SEE PERMISSIONS](https://trash-guides.info/File-and-Folder-Structure/How-to-set-up/Docker/) 
+[Useful guide on first run](https://github.com/automation-avenue/arr-new)
 
 ## Services description
 
