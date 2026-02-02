@@ -69,6 +69,13 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /media-server-config/prowlarr:/config
 
+  flaresolverr:
+    <<: *common-keys
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    ports:
+      - 8191:8191
+
   qbittorrent: # downloader
     <<: *common-keys
     container_name: qbittorrent
