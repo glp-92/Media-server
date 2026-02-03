@@ -1,37 +1,46 @@
 x-common-keys: &common-keys # common keys
-    restart: unless-stopped
-    logging:
-      driver: json-file
-    security_opt:
-      - no-new-privileges:true
-    environment:
-      PUID: 997
-      PGID: 983
-      UMASK: 002 # new files permission inheritance
-      TZ: Europe/London
-    dns:
-      - 1.1.1.1
-      - 1.0.0.1
+  restart: unless-stopped
+  logging:
+    driver: json-file
+  security_opt:
+    - no-new-privileges:true
+  environment:
+    PUID: 997
+    PGID: 983
+    UMASK: 002 # new files permission inheritance
+    TZ: Europe/London
+  dns:
+    - 1.1.1.1
+    - 1.0.0.1
 
 services:
+  reverse-proxy:
+    image: nginx:1.29.3-alpine
+    restart: unless-stopped
+    security_opt:
+    - no-new-privileges:true
+    ports:
+      - "127.0.0.1:80:80" # If multiple eth binded to different addresses, filter this way
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
 
   radarr: # management of movies library
     <<: *common-keys
     container_name: radarr
     image: ghcr.io/hotio/radarr:latest
-    ports:
-      - 7878:7878
+    # ports:
+    #   - "127.0.0.1:7878:7878"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${ROOT_CONFIG_FOLDER}/radarr:/config
       - ${ROOT_MEDIA_FOLDER}:/data
-  
-  sonarr: # management of tv shows library  
+
+  sonarr: # management of tv shows library
     <<: *common-keys
     container_name: sonarr
     image: ghcr.io/hotio/sonarr:latest
-    ports:
-      - 8989:8989
+    # ports:
+    #   - "127.0.0.1:8989:8989"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${ROOT_CONFIG_FOLDER}/sonarr:/config
@@ -41,8 +50,8 @@ services:
     <<: *common-keys
     container_name: lidarr
     image: ghcr.io/hotio/lidarr:latest
-    ports:
-      - 8686:8686
+    # ports:
+    #   - "127.0.0.1:8686:8686"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${ROOT_CONFIG_FOLDER}/lidarr:/config
@@ -52,8 +61,8 @@ services:
     <<: *common-keys
     container_name: bazarr
     image: ghcr.io/hotio/bazarr:latest
-    ports:
-      - 6767:6767
+    # ports:
+    #   - "127.0.0.1:6767:6767"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${ROOT_CONFIG_FOLDER}/bazarr:/config
@@ -63,8 +72,8 @@ services:
     <<: *common-keys
     container_name: prowlarr
     image: ghcr.io/hotio/prowlarr:latest
-    ports:
-      - 9696:9696
+    # ports:
+    #   - "127.0.0.1:9696:9696"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${ROOT_CONFIG_FOLDER}/prowlarr:/config
@@ -73,17 +82,13 @@ services:
     <<: *common-keys
     image: ghcr.io/flaresolverr/flaresolverr:latest
     container_name: flaresolverr
-    ports:
-      - 8191:8191
 
   qbittorrent: # downloader
     <<: *common-keys
     container_name: qbittorrent
     image: ghcr.io/hotio/qbittorrent:latest
     ports:
-      - 8080:8080
-      - 6881:6881
-      - 6881:6881/udp
+      - "127.0.0.1:8080:8080"
     environment:
       - WEBUI_PORT=8080
       - TORRENTING_PORT=6881
@@ -104,8 +109,8 @@ services:
       - /etc/localtime:/etc/localtime:ro # to get time to container
       - ${ROOT_CONFIG_FOLDER}/jellyfin:/config
       - ${ROOT_MEDIA_FOLDER}/media:/data/media:ro #read-only
-    ports:
-      - 8096:8096
+    # ports:
+    #   - "127.0.0.1:8096:8096"
 
 networks:
   default:

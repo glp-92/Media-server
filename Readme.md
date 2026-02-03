@@ -60,3 +60,15 @@ sudo chown -R mediaserver:mediaserver /mnt/SSD2/media-server-config
 sudo chmod -R a=,a+rX,u+w,g+w /mnt/SSD2/media-server-config
 ls -ln /mnt/SSD2/media-server-config
 ```
+
+## Behind load balancer
+
+An `Nginx.conf` file is provided in order to improve accesibility to services from browser. Keep in mind that this service should not be exposed outside home network because cybersecurity mitigations are not included.
+
+To use on same pc is needed a new line on hosts file indicating service
+
+```bash
+sudo nano /etc/hosts
+```
+
+Add in the end of the file `127.0.0.1 stream.homeserver.local.com` as example to use Jellyfin with settings provided
