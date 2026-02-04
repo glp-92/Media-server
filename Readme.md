@@ -1,13 +1,15 @@
 # About ARR Stack
 
-Arr Stack provides a full media server with all elements interconnected to automate tasks such as select films, automatically download, get subtitles, manage storage ando more
+Arr Stack provides a full media server with all elements interconnected to automate tasks such as select films, automatically download, get subtitles, manage storage ando more.
+
+For first time config of services [check this small guide](./First-config.md)
 
 ## Docks
 
 It is higly recommended to read the docs in order to understand what services are doing
 
 [Justification of usage known DNS over VPN](https://wiki.servarr.com/en/vpn)
-[Setup folder structure for docker containers. SEE PERMISSIONS](https://trash-guides.info/File-and-Folder-Structure/How-to-set-up/Docker/) 
+[Setup folder structure for docker containers. SEE PERMISSIONS](https://trash-guides.info/File-and-Folder-Structure/How-to-set-up/Docker/)
 [Useful guide on first run](https://github.com/automation-avenue/arr-new)
 
 ## Services description
