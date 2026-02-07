@@ -137,7 +137,7 @@ services:
     restart: unless-stopped
     environment:
       - LOG_LEVEL=debug
-      - TZ: Europe/London
+      - TZ=Europe/London
     ports:
       - "127.0.0.1:5055:5055"
     volumes:
