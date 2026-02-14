@@ -1,10 +1,6 @@
-# About ARR Stack & Immich
+# About ARR Stack
 
-Arr Stack provides a full media server with all elements interconnected to automate tasks such as select films, automatically download, get subtitles, manage storage ando more.
-
-[Inmich](https://immich.app/) is an Open Source solution for content sharing as images and videos. Self hosted, allows multiple users creation and manage their access to the server. It uses by default a Postgres and Valkey databases to handle relationships and caching
-
-Available on [IOS](https://apps.apple.com/us/app/immich/id1613945652) and [Android](https://play.google.com/store/apps/details?id=app.alextran.immich&hl=en)
+Arr Stack provides a full media server with all elements interconnected to automate tasks such as select films, automatically download, get subtitles, manage storage and more.
 
 For first time config of services [check this small guide](./First-config.md)
 
