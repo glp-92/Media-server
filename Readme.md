@@ -28,76 +28,10 @@ It is higly recommended to read the docs in order to understand what services ar
 - `Prowlarr` connects radarr/sonnar with qbittorrent and sabnzdb
 - `Flaresolverr` automatically solves Cloudflare captchas
 - `Jellyfin` media server that provides de UI to see the content
-- `Immich` content sharing server for photo and video
-- `Valkey` used by immich to cache content
-- `Postgres` database user by immich
+- `Jellyseer` download automation centralized on this server for every content
 
 ## Setup main directories
 
-[This script](./setup.sh) automates user and dirs creation
+[This script](./setup.sh) automates user and dirs creation. Service accounts are created to run containers so avoid root usage
 
-First, create non-sudo users to run the stack and avoid compromising other resources
-
-```bash
-sudo useradd -r -s /usr/sbin/nologin mediaserver
-sudo useradd -r -s /usr/sbin/nologin immich
-```
-
-Add your user to mediaserver and immich group in order to manage folders without sudo permission
-
-```bash
-sudo usermod -aG mediaserver $(whoami)
-sudo usermod -aG immich $(whoami)
-```
-
-Create a `/media-server` folder which contains `/torrents` and `/media`, and inside subfolders for every type of media (tv, movies and music)
-
-Tree visually outputs the result folder structure
-
-Assign folder to mediaserver user and group
-
-`a=,a+rX,u+w,g+w` => a deletes current permission; a+rX write permission but only exec permission to folders; u+w,g+w read and write group and user
-
-```bash
-sudo mkdir -p "$ROOT_MEDIA_FOLDER"/{torrents/{tv,movies,music},media/{tv,movies,music}}
-sudo apt update && sudo apt install -y tree
-tree "$ROOT_MEDIA_FOLDER"
-sudo chown -R mediaserver:mediaserver "$ROOT_MEDIA_FOLDER"
-sudo chmod -R a=,a+rX,u+w,g+w "$ROOT_MEDIA_FOLDER"
-ls -ln "$ROOT_MEDIA_FOLDER"
-```
-
-Create a folder to storage services config generated on first time
-
-```bash
-sudo mkdir -p "$ROOT_CONFIG_FOLDER"/{radarr,sonarr,lidarr,bazarr,prowlarr,qbittorrent,jellyfin}
-tree "$ROOT_CONFIG_FOLDER"
-sudo chown -R mediaserver:mediaserver "$ROOT_CONFIG_FOLDER"
-sudo chmod -R a=,a+rX,u+w,g+w "$ROOT_CONFIG_FOLDER"
-ls -ln "$ROOT_CONFIG_FOLDER"
-```
-
-Create immich needed folders
-
-```bash
-sudo mkdir -p "$ROOT_IMAGES_FOLDER"
-sudo mkdir -p "$DB_IMAGES_FOLDER"
-sudo chown -R immich:immich "$ROOT_IMAGES_FOLDER"
-sudo chown -R 999:999 "$DB_IMAGES_FOLDER"
-sudo chmod -R a=,a+rX,u+w,g+w "$ROOT_IMAGES_FOLDER"
-sudo chmod -R 750 "$DB_IMAGES_FOLDER"
-ls -ln "$ROOT_IMAGES_FOLDER"
-ls -ln "$DB_IMAGES_FOLDER"
-```
-
-## Behind load balancer
-
-An `Nginx.conf` file is provided in order to improve accesibility to services from browser. Keep in mind that this service should not be exposed outside home network because cybersecurity mitigations are not included.
-
-To use on same pc is needed a new line on hosts file indicating service
-
-```bash
-sudo nano /etc/hosts
-```
-
-Add in the end of the file `127.0.0.1 stream.homeserver.local.com` as example to use Jellyfin with settings provided
+## Tailscale for remote access
